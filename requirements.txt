@@ -1,0 +1,26 @@
+# === YAML file handler ===
+PyYAML
+
+# === API Framework ===
+fastapi
+uvicorn
+
+# === Vector Database ===
+faiss-cpu
+
+# === AI Agents ===
+langchain
+langchain_community
+langchain-openai
+langgraph
+
+# === Schema defining ===
+pydantic
+
+# === ENV ===
+python-dotenv
+
+# === UI ===
+streamlit
+
+-e .
