@@ -10,3 +10,4 @@ llm_models:
 # === Models Mapping ===
 agent_model_mapping:
   question_rewriter: "text_generator"
+  retrieval_grader: "text_generator"

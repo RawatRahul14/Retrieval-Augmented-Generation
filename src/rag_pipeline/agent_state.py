@@ -14,3 +14,4 @@ class AgentState(TypedDict):
 
     ## === Documents ===
     documents: list | None
+    proceed_to_generate: bool

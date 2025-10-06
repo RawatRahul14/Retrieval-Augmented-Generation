@@ -14,6 +14,9 @@ from rag_pipeline.agents.query_rewriter import query_rewriter
 ## === Document Retriever ===
 from rag_pipeline.agents.doc_retriever import doc_retriever
 
+## === Document Grader ===
+from rag_pipeline.agents.grader import doc_grader
+
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -46,8 +49,19 @@ def run_graph():
         )
     )
 
+    ## === 3. Doc Grader ===
+    workflow.add_node(
+        "doc_grader_node",
+        RunnableLambda(doc_grader).with_config(
+            {
+                "run_async": True
+            }
+        )
+    )
+
     workflow.set_entry_point("query_rewriter_node")
     workflow.add_edge("query_rewriter_node", "doc_retriever_node")
-    workflow.add_edge("doc_retriever_node", END)
+    workflow.add_edge("doc_retriever_node", "doc_grader_node")
+    workflow.add_edge("doc_grader_node", END)
 
     return workflow.compile()

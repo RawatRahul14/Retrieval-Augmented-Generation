@@ -28,6 +28,9 @@ async def query_rewriter(
     ## === Document List ===
     state["documents"] = []
 
+    ## === Flag to proceed further ===
+    state["proceed_to_generate"] = False
+
     ## === Prompt ===
     prompt = render_prompt(
         prompt_name = "question_rewriter",
