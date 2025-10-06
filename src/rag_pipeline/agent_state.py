@@ -11,3 +11,6 @@ class AgentState(TypedDict):
 
     ## === Rephrased Question ===
     rephrased_question: str | None
+
+    ## === Documents ===
+    documents: list | None

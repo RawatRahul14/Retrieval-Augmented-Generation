@@ -25,6 +25,9 @@ async def query_rewriter(
     ## === Current Question ===
     current_question: str = state.get("question", "")
 
+    ## === Document List ===
+    state["documents"] = []
+
     ## === Prompt ===
     prompt = render_prompt(
         prompt_name = "question_rewriter",

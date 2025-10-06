@@ -66,4 +66,11 @@ def create_retriever(
     db.save_local(str(save_path))
 
     print(f"✅ Retriever (FAISS index) created and saved at: {save_path}")
-    return db, save_path
+
+    # === Create the retriever object ===
+    retriever = db.as_retriever(
+        search_kwargs = {
+            "k": 5
+        }
+    )
+    return retriever, save_path
