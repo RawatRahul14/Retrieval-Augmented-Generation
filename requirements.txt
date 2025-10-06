@@ -17,6 +17,9 @@ langgraph
 # === Schema defining ===
 pydantic
 
+# === Data Extract ===
+pdfplumber
+
 # === ENV ===
 python-dotenv
 
