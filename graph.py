@@ -4,6 +4,8 @@ from langgraph.graph.state import StateGraph
 from langgraph.graph import END
 from langchain_core.runnables import RunnableLambda
 from dotenv import load_dotenv
+from langgraph.checkpoint.mongodb import AsyncMongoDBSaver
+from pymongo import AsyncMongoClient
 
 # === Agent State ===
 from rag_pipeline.agent_state import AgentState
@@ -28,12 +30,25 @@ from rag_pipeline.router.routes import no_relevant_docs
 
 load_dotenv()
 
+# === Env Imports ===
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+MONGODB_URI = os.getenv("MONGODB_URI")
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
 def run_graph():
     """
     Runs the state graph for the RAG pipeline.
     """
+    # === Initialize MongoDB Saver ===
+    # === MongoClient ===
+    mongo_client = AsyncMongoClient(MONGODB_URI)
+    checkpointer = AsyncMongoDBSaver(
+        client = mongo_client,
+        db_name = DB_NAME,
+        checkpoint_collection_name = COLLECTION_NAME
+    )
+
     # === Initialize the state graph ===
     workflow = StateGraph(AgentState)
 
@@ -102,4 +117,6 @@ def run_graph():
     workflow.add_edge("answer_generation_node", END)
     workflow.add_edge("fallback_agent_node", END)
 
-    return workflow.compile()
+    return workflow.compile(
+        checkpointer = checkpointer
+    )
