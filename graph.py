@@ -25,6 +25,9 @@ from rag_pipeline.agents.generation import answer_generation
 ## === Fallback ===
 from rag_pipeline.agents.fallback import fallback_agent
 
+## === Final Answer ===
+from rag_pipeline.agents.answer import final_answer
+
 ## === Routes ===
 from rag_pipeline.router.routes import no_relevant_docs
 
@@ -103,6 +106,16 @@ def run_graph():
         )
     )
 
+    ## === 6. Final Answer Node ===
+    workflow.add_node(
+        "final_answer_node",
+        RunnableLambda(final_answer).with_config(
+            {
+                "run_async": True
+            }
+        )
+    )
+
     workflow.set_entry_point("query_rewriter_node")
     workflow.add_edge("query_rewriter_node", "doc_retriever_node")
     workflow.add_edge("doc_retriever_node", "doc_grader_node")
@@ -114,8 +127,9 @@ def run_graph():
             "fallback": "fallback_agent_node"
         }
     ) 
-    workflow.add_edge("answer_generation_node", END)
-    workflow.add_edge("fallback_agent_node", END)
+    workflow.add_edge("answer_generation_node", "final_answer_node")
+    workflow.add_edge("fallback_agent_node", "final_answer_node")
+    workflow.add_edge("final_answer_node", END)
 
     return workflow.compile(
         checkpointer = checkpointer

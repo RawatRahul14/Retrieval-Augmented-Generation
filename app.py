@@ -34,7 +34,7 @@ def main():
         st.header("📁 Upload Documents")
         uploaded_files = st.file_uploader(
             "Upload up to 20 documents",
-            type=["pdf", "txt"],
+            type = ["pdf", "txt"],
             accept_multiple_files = True,
             help = "You can upload up to 20 PDF or TXT files."
         )
