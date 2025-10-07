@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import os
 
-
 # === Function to extract text and tables from PDF files ===
 def extract_from_pdf(
         folder_path: Path = Path("data")

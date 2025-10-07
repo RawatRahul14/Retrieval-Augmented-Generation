@@ -1,3 +1,6 @@
+# === Python Modules ===
+from pathlib import Path
+
 # === Utils ===
 from rag_pipeline.utils.extract_doc import (
     extract_from_pdf,
@@ -5,7 +8,9 @@ from rag_pipeline.utils.extract_doc import (
 )
 
 # === Function to extract data from documents ===
-def extract_data_pipeline() -> tuple[list, list, list]:
+def extract_data_pipeline(
+        session_folder: Path
+) -> tuple[list, list, list]:
     """
     Extracts text, tables, and file-level metadata from PDF and text files in the 'data' folder.
 
@@ -15,10 +20,10 @@ def extract_data_pipeline() -> tuple[list, list, list]:
         file_metadata (list[dict]): List of file-level metadata for both PDFs and text files.
     """
     # === Extract from PDFs ===
-    pdf_texts, pdf_tables, pdf_meta = extract_from_pdf()
+    pdf_texts, pdf_tables, pdf_meta = extract_from_pdf(folder_path = session_folder)
 
     # === Extract from text files ===
-    txt_texts, txt_meta = extract_from_text_files()
+    txt_texts, txt_meta = extract_from_text_files(folder_path = session_folder)
 
     # === Combine all text chunks ===
     all_texts = (pdf_texts or []) + (txt_texts or [])

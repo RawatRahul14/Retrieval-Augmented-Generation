@@ -4,6 +4,8 @@ PyYAML
 # === API Framework ===
 fastapi
 uvicorn
+python-multipart
+aiofiles
 
 # === Vector Database ===
 faiss-cpu
