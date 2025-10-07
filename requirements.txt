@@ -31,4 +31,8 @@ python-dotenv
 # === UI ===
 streamlit
 
+# === Testing ===
+pytest
+pytest-asyncio
+
 -e .
