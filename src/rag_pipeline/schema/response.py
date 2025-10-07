@@ -1,6 +1,6 @@
 # === Python Modules ===
 from pydantic import BaseModel
-from typing import Literal, List, Dict, Any
+from typing import Literal
 
 ## === Response Model for File Upload ===
 class UploadResponse(BaseModel):
@@ -9,3 +9,9 @@ class UploadResponse(BaseModel):
     saved_path: str | None = None
     uploaded_file: str | None = None
     message: str
+
+## === Response Model for User Query ===
+class UserQueryResponse(BaseModel):
+    status: Literal["success", "failure"] = "failure"
+    session_id: str | None = None
+    answer: str | None = None

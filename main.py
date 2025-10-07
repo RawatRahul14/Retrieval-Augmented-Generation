@@ -1,10 +1,10 @@
 # === Python Modules ===
-import os
 import uuid
 from pathlib import Path
 from typing import List
 from fastapi import FastAPI, UploadFile, Form, File
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import aiofiles
 
@@ -14,15 +14,36 @@ from rag_pipeline.components.upload import upload_file_metadata
 from rag_pipeline.components.retriever import create_retriever
 
 # === Schema Imports ===
-from src.rag_pipeline.schema.response import UploadResponse
+from src.rag_pipeline.schema.response import (
+    UploadResponse,
+    UserQueryResponse
+)
+from rag_pipeline.schema.requests import QueryRequest
+
+# === Graph Compiler ===
+from graph import run_graph
 
 # === Load ENV ===
 load_dotenv()
 
+## === Startup event ===
+@asynccontextmanager
+async def lifespan(
+    app: FastAPI
+):
+    """
+    Initiates the graph
+    """
+    print("Starting up the graph...")
+    app.state.graph = run_graph()
+    yield
+    print("Shutting down the graph...")
+
 # === Initialize FastAPI ===
 app = FastAPI(
     title = "Retrieval-Augmented Generation API",
-    version = "1.0"
+    version = "1.0",
+    lifespan = lifespan
 )
 
 app.add_middleware(
@@ -111,4 +132,55 @@ async def upload_files(
             status = "failure",
             session_id = session_id,
             message = f"❌ Error in uploading files: {str(e)}"
+        )
+
+# === User Query Endpoint ===
+@app.post("/query/", response_model=UserQueryResponse)
+async def user_query(request: QueryRequest):
+    """
+    Handles user query for a given session_id.
+    Executes the LangGraph RAG pipeline using the retriever associated with that session.
+    """
+    try:
+        session_id = request.session_id
+        user_query = request.user_query
+
+        retriever = app.state.retrievers[session_id]
+
+        # === Step 1: Access pre-initialized LangGraph ===
+        if not hasattr(app.state, "graph"):
+            return UserQueryResponse(
+                status = "failure",
+                session_id = session_id,
+                message = "LangGraph not initialized. Please restart the server."
+            )
+
+        graph = app.state.graph
+
+        # === Step 2: Run the RAG pipeline ===
+        response = await graph.ainvoke(
+            input = {"question": user_query},
+            config = {
+                "configurable": {
+                    "retriever": retriever,
+                    "thread_id": session_id
+                }
+            }
+        )
+
+        # === Step 3: Extract structured output ===
+        answer = response.get("generated_answer", "No answer generated.")
+
+        return UserQueryResponse(
+            status = "success",
+            session_id = session_id,
+            answer = answer
+        )
+
+    except Exception as e:
+        import traceback
+        print("⚠️ Error during query:", traceback.format_exc())
+        return UserQueryResponse(
+            status = "failure",
+            message = f"Error while processing query: {e}"
         )

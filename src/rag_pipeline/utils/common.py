@@ -13,11 +13,8 @@ def init_session():
     ### === Requierd State sessions ===
     sessions: Dict[str, Any] = {
         "messages": [],
-        "start_interview": False,
         "session_id": None,
-        "intro_shown": False,
         "pending_stream": None,
-        "first_message_verification": None
     }
 
     ### === Initialising using the for loop ===
