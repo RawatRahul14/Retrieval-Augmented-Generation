@@ -5,7 +5,6 @@
 ![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-0066FF?style=for-the-badge)
 ![OpenAI](https://img.shields.io/badge/OpenAI-Embeddings-412991?style=for-the-badge&logo=openai)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Async%20Checkpoint-4DB33D?style=for-the-badge&logo=mongodb&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-S3%20%7C%20Textract-F7931E?style=for-the-badge&logo=amazonaws&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Deployment-0db7ed?style=for-the-badge&logo=docker&logoColor=white)
 
 

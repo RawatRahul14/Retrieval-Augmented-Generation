@@ -1,0 +1,34 @@
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag_fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - API_URL=${API_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MONGODB_URI=${MONGODB_URI}
+      - DB_NAME=${DB_NAME}
+      - COLLECTION_NAME=${COLLECTION_NAME}
+      - COLLECTION_NAME_UPLOAD=${COLLECTION_NAME_UPLOAD}
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    restart: unless-stopped
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: rag_streamlit
+    depends_on:
+      - fastapi
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://fastapi:8000
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

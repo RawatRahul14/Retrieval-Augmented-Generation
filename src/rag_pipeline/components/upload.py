@@ -10,7 +10,7 @@ load_dotenv()
 
 MONGODB_URI = os.getenv("MONGODB_URI")
 DB_NAME = os.getenv("DB_NAME")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME_UPLOAD")
+COLLECTION_NAME_UPLOAD = os.getenv("COLLECTION_NAME_UPLOAD")
 
 async def upload_file_metadata(
     session_id: str,
@@ -35,7 +35,7 @@ async def upload_file_metadata(
         ## === Connect to MongoDB ===
         client = AsyncMongoClient(MONGODB_URI)
         db = client[DB_NAME]
-        collection = db[COLLECTION_NAME]
+        collection = db[COLLECTION_NAME_UPLOAD]
 
         ## === Build the document ===
         document = {
