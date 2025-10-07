@@ -17,6 +17,15 @@ from rag_pipeline.agents.doc_retriever import doc_retriever
 ## === Document Grader ===
 from rag_pipeline.agents.grader import doc_grader
 
+## === Answer Generation ===
+from rag_pipeline.agents.generation import answer_generation
+
+## === Fallback ===
+from rag_pipeline.agents.fallback import fallback_agent
+
+## === Routes ===
+from rag_pipeline.router.routes import no_relevant_docs
+
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -59,9 +68,38 @@ def run_graph():
         )
     )
 
+    ## === 4. Generation ===
+    workflow.add_node(
+        "answer_generation_node",
+        RunnableLambda(answer_generation).with_config(
+            {
+                "run_async": True
+            }
+        )
+    )
+
+    ## === 5. Fallback ===
+    workflow.add_node(
+        "fallback_agent_node",
+        RunnableLambda(fallback_agent).with_config(
+            {
+                "run_async": True
+            }
+        )
+    )
+
     workflow.set_entry_point("query_rewriter_node")
     workflow.add_edge("query_rewriter_node", "doc_retriever_node")
     workflow.add_edge("doc_retriever_node", "doc_grader_node")
-    workflow.add_edge("doc_grader_node", END)
+    workflow.add_conditional_edges(
+        "doc_grader_node",
+        no_relevant_docs,
+        {
+            "generate_answer": "answer_generation_node",
+            "fallback": "fallback_agent_node"
+        }
+    ) 
+    workflow.add_edge("answer_generation_node", END)
+    workflow.add_edge("fallback_agent_node", END)
 
     return workflow.compile()

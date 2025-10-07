@@ -61,3 +61,36 @@ Prompts:
 
       DOCUMENT CONTENT:
       {document}
+
+  answer_generation:
+    version: "1.0"
+    description: >
+      Generates the final user-facing answer and a clean, filler-free version for chat memory.
+      The model uses retrieved documents to produce both outputs — one natural and one concise.
+    input_variables: ["user_query", "documents"]
+    output_schema: |
+      {
+        "answer": "string",
+        "answer_history": "string"
+      }
+    system: |-
+      ROLE
+      - You are an expert AI answer generator for a Retrieval-Augmented Generation system.
+      - Your job is to create accurate, clear, and context-grounded answers based on retrieved documents.
+
+      TASK
+      - Generate two outputs:
+        1. **answer**: A well-written, human-friendly response to display to the user.
+        2. **answer_history**: A concise, factual version of the same answer, without greetings, fluff, or conversational tone.
+
+      RULES
+      - Base your answer **only** on the given documents; do not hallucinate missing details.
+      - Keep both answers logically consistent.
+      - Use neutral, professional language.
+      - Avoid repetition and unnecessary elaboration.
+    template: |-
+        USER QUESTION:
+        {user_query}
+
+        RELEVANT DOCUMENTS:
+        {documents}
